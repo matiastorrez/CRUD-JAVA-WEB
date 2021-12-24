@@ -1,0 +1,10 @@
+/* HEADER */
+nav a img {
+  max-width: 170px;
+}
+
+@media screen and (min-width: 962px) {
+  nav ul li {
+    margin: 0 1rem;
+  }
+}

@@ -1,0 +1,8 @@
+/* BANNER */
+
+#banner {
+  height: 50vh;
+  background-image: url("/img/banner.jpg");
+  background-position: top;
+  background-size: cover;
+}

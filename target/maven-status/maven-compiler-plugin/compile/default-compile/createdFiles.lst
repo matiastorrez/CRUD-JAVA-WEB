@@ -1,0 +1,10 @@
+database\TransferDAO.class
+config\DBConn.class
+controller\ViewsUserController.class
+controller\ViewsController.class
+controller\UserController.class
+model\Transfer.class
+model\Account.class
+database\AccountDAO.class
+model\User.class
+database\UserDAO.class

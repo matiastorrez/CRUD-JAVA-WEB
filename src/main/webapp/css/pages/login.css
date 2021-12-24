@@ -1,0 +1,16 @@
+
+/* MAIN */
+
+
+#login-main {
+    gap: 3rem;
+    flex-wrap: wrap;
+}
+
+#login-main > * {
+    width: 40%;
+}
+
+.left-hand img {
+    width: 100%;
+}
