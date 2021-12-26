@@ -93,25 +93,43 @@ public class UserController extends HttpServlet {
             session.setAttribute("userLogin", getUser);
             response.sendRedirect("/user/profile");
         } else {
-            response.sendRedirect("/view/");
+            String message = "Alguna de sus credenciales es incorrecta";
+            session.setAttribute("createMessage", message);
+            response.sendRedirect("/view/login");
         }
     }
 
     private void createUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
         HttpSession session = request.getSession();
-        UserDAO userDB = new UserDAO();
-
-        String userName = request.getParameter("username");
         String pass = request.getParameter("password");
-        String name = request.getParameter("name");
-        String lastname = request.getParameter("lastname");
-        String email = request.getParameter("email");
-        String gender = request.getParameter("gender");
         String repass = request.getParameter("repassword");
-        boolean isCreated = userDB.createUser(userName, pass, name, lastname, email, gender, repass);
-
-        session.setAttribute("createMessage", isCreated);
-        response.sendRedirect("/views/userMessage.jsp");
+        if (!repass.equalsIgnoreCase(pass)) {
+            String message = "Las passwords no coinciden";
+            session.setAttribute("createMessage", message);
+            response.sendRedirect("/view/register");
+        } else {
+            String userName = request.getParameter("username");
+            String name = request.getParameter("name");
+            String lastname = request.getParameter("lastname");
+            String email = request.getParameter("email");
+            String gender = request.getParameter("gender");
+            UserDAO userDB = new UserDAO();
+            try {
+                boolean isCreated = userDB.createUser(userName, pass, name, lastname, email, gender, repass);
+                if (isCreated) {
+                    String message = "Se creo la cuenta con exito";
+                    session.setAttribute("createMessage", message);
+                    response.sendRedirect("/view/login");
+                } else {
+                    String message = "Hubo un error";
+                    session.setAttribute("createMessage", message);
+                    response.sendRedirect("/view/register");
+                }
+            } catch (Exception e) {
+                session.setAttribute("createMessage", e.getMessage());
+                response.sendRedirect("/view/register");
+            }
+        }
     }
 
     private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -137,21 +155,20 @@ public class UserController extends HttpServlet {
         double amountTrasfer = Double.parseDouble(request.getParameter("amountTrasfer"));
 
         PrintWriter out = response.getWriter();
-        
+
         if (getUser != null) {
             UserDAO userDB = new UserDAO();
             AccountDAO accountsDB = new AccountDAO();
             TransferDAO transferDB = new TransferDAO();
 
-            
-             out.println( "hola 1");
+            out.println("hola 1");
 
             Account accountOrigin = accountsDB.getUserAccount(getUser, idAccountUserOrigin);
             out.println(accountOrigin + " 1");
 
             if (accountOrigin != null) {
                 User userDestination = userDB.getUserByID(idUserDestination);
-                 out.println(userDestination + " 2");
+                out.println(userDestination + " 2");
                 if (userDestination != null) {
                     Account accountDestination = accountsDB.getUserAccount(userDestination, idAccountUserDestination);
                     out.println(accountDestination + " 3");
@@ -167,7 +184,6 @@ public class UserController extends HttpServlet {
                 }
             }
 
-            
             response.sendRedirect("/user/myaccounts");
 
         } else {
@@ -177,10 +193,10 @@ public class UserController extends HttpServlet {
 
     private void myTransfers(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
         PrintWriter out = response.getWriter();
-        
+
         HttpSession session = request.getSession();
         User getUser = (User) session.getAttribute("userLogin");
-        
+
         if (getUser != null) {
             TransferDAO transferDB = new TransferDAO();
 

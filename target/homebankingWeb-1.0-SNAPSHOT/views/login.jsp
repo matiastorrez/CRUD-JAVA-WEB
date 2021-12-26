@@ -4,6 +4,17 @@
 <main  class="container d-flex flex-column align-items-center gap-2 justify-content-center" >
     <h1 class="text-center mb-3">Online banking</h1>
     <h2 class="text-center mb-5">Ingresá a tu cuenta a continuación:</h2>
+    <%        String message = (String) session.getAttribute("createMessage");
+
+        if (message != null) {
+    %>
+    <h1 class="m-5" ><%=message%></h1>
+    <%
+            session.setAttribute("createMessage", null);
+        }
+    %>   
+
+
     <div id="login-main" class=" d-flex justify-content-center align-items-center">
         <section class="left-hand">
             <img src="/img/user_login.svg" />

@@ -16,7 +16,8 @@ import java.sql.SQLException;
 public class DBConn {
 
     private String driver = "com.mysql.jdbc.Driver";
-    private String host = "jdbc:mysql://localhost:3307/";
+//    private String host = "jdbc:mysql://node88048-env-1307264.jelastic.saveincloud.net:3306/";
+       private String host = "jdbc:mysql://localhost:3307/";
 
     public Connection getConnection(String database, String userMYSQL, String passMYSQL) {
 

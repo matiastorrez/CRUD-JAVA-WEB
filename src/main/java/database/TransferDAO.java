@@ -29,24 +29,23 @@ public class TransferDAO {
         this.connection = conn.getConnection("homebanking", DatosDB.USER, DatosDB.PASSWORD);
 
     }
-
+    
     public boolean createTransfer(Transfer transfer) throws SQLException {
 
-        PreparedStatement ps;
-        ps = connection.prepareStatement("INSERT INTO transfers (origin,destination,amount) VALUES (?,?,?)");
-        ps.setInt(1, transfer.getOrigin().getId());
-        ps.setInt(2, transfer.getDestination().getId());
-        ps.setDouble(3, transfer.getAmount());
-        int result = ps.executeUpdate();
-        ps.close();
-        return result > 0;
-
+        String query = "INSERT INTO transfers (origin,destination,amount) VALUES (?,?,?)";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, transfer.getOrigin().getId());
+            ps.setInt(2, transfer.getDestination().getId());
+            ps.setDouble(3, transfer.getAmount());
+            int result = ps.executeUpdate();
+            return result > 0;
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudo crear la transferencia en la BD", ex);
+        }
     }
 
     public List<Transfer> getAllTransfers(User user) throws SQLException {
         AccountDAO accountDB = new AccountDAO();
-        PreparedStatement ps;
-        ResultSet rs;
         List<Transfer> transfers = new ArrayList<>();
 
 //       HACIENDO ESTO ME EVITRIA LLAMAR A AccountDAO ya que puedo obtener todos los datos de esta consulta
@@ -56,22 +55,26 @@ public class TransferDAO {
 //inner join users uo on uo.id = ao.id_user
 //inner join users ud on ud.id = ad.id_user
 //where t.origin IN(select id_account from accounts where id_user = ?) OR t.destination IN(select id_account from accounts where id_user = ?);
-        ps = connection.prepareStatement("select * from transfers t where t.origin IN(select id_account from accounts where id_user = ?) OR t.destination IN(select id_account from accounts where id_user = ?)");
-        ps.setInt(1, user.getId());
-        ps.setInt(2, user.getId());
-        rs = ps.executeQuery();
-
-        while (rs.next()) {
-            int id = rs.getInt("id");
-            int origin = rs.getInt("origin");
-            int destination = rs.getInt("destination");
-            double amount = rs.getDouble("amount");
-            Account accountOrigin = accountDB.getAccountWithUser(origin);
-            Account accountDestination = accountDB.getAccountWithUser(destination);
-            Transfer transfer = new Transfer(id, accountOrigin, accountDestination, amount);
-            transfers.add(transfer);
+        String query = "select * from transfers t where t.origin IN(select id_account from accounts where id_user = ?) OR t.destination IN(select id_account from accounts where id_user = ?)";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, user.getId());
+            ps.setInt(2, user.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    int origin = rs.getInt("origin");
+                    int destination = rs.getInt("destination");
+                    double amount = rs.getDouble("amount");
+                    Account accountOrigin = accountDB.getAccountWithUser(origin);
+                    Account accountDestination = accountDB.getAccountWithUser(destination);
+                    Transfer transfer = new Transfer(id, accountOrigin, accountDestination, amount);
+                    transfers.add(transfer);
+                }
+                return transfers;
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudieron obtener las transferencias de la BD", ex);
         }
-        return transfers;
 
     }
 

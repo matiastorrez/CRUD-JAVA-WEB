@@ -8,5 +8,10 @@
 
 <h1 class="m-5" >Bienvenido a tu perfil</h1>
 
+<%
+
+    out.print(request.getAttribute("usuarios"));
+%>
+
 
 <%@include file="../partials/footer.jsp"%>
