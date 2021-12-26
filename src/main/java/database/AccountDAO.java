@@ -123,5 +123,57 @@ public class AccountDAO {
             throw new RuntimeException("No se pudo obtener la cuenta con el usuario de la BD", ex);
         }
     }
+    
+    
+    public int totalNumberOfAccounts(User user){
+          
+        String query = "select count(*) as total_accounts from accounts where id_user = ?;";
+        int total = 0;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, user.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    total =  rs.getInt("total_accounts");
+                }
+            }
+            return total;
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudo obtener la cuenta con el usuario de la BD", ex);
+        }
+    }
+    
+    public int totalNumberOfAccountsCA(User user){
+          
+        String query = "select count(*) as total_accounts from accounts where id_user = ? and account_type = 'CA';";
+        int total = 0;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, user.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    total =  rs.getInt("total_accounts");
+                }
+            }
+            return total;
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudo obtener la cuenta con el usuario de la BD", ex);
+        }
+    }
+    
+     public int totalNumberOfAccountsCC(User user){
+        String query = "select count(*) as total_accounts from accounts where id_user = ? and account_type = 'CC';";
+        int total = 0;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, user.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    total =  rs.getInt("total_accounts");
+                }
+            }
+            return total;
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudo obtener la cuenta con el usuario de la BD", ex);
+        }
+    }
+    
 
 }

@@ -1,6 +1,6 @@
 <%@include file="./helpers/ifYouAreLoggedIn.jsp" %>
 <%@include file="./partials/header.jsp" %>
-<main class="container d-flex justify-content-center align-items-center gap-5" >
+<main class=" col-12 container d-flex justify-content-center align-items-center " >
 
 <%
     String message = (String) session.getAttribute("messageDB");
@@ -20,31 +20,31 @@
     }
 %>   
     
-    <section class="left-hand">
-        <img src="/img/user_login.svg" />
+    <section class="d-none d-md-block col-md-6">
+        <img style="width: 100%"  src="/img/user_login.svg" />
     </section>
-    <form class="row g-3" method="POST" action="/user/createuser" enctype="application/x-www-form-urlencoded">
-        <div class="col-md-6">
+    <form class="row bg-light py-5 px-3 px-sm-5 my-5" method="POST" action="/user/createuser" enctype="application/x-www-form-urlencoded">
+        <div class="col-md-6 ">
             <label for="name" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Ingresa tu nombre" required>
+            <input type="text" class="form-control" id="name" name="name"  required>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mt-3 mt-md-0">
             <label for="lastname" class="form-label">Apellido</label>
-            <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Ingresa tu apellido" required>
+            <input type="text" class="form-control" id="lastname" name="lastname"  required>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-12 mt-3">
             <label for="username" class="form-label">Usuario</label>
             <div class="input-group has-validation">
-                <input type="text" class="form-control" id="username" name="username" placeholder="Ingresa un nombre de usuario" aria-describedby="inputGroupPrepend" required>
+                <input type="text" class="form-control" id="username" name="username"  aria-describedby="inputGroupPrepend" required>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-12 mt-3">
             <label for="username" class="form-label">Email</label>
             <div class="input-group has-validation">
-                <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa un correo" aria-describedby="inputGroupPrepend" required>
+                <input type="email" class="form-control" id="email" name="email"  aria-describedby="inputGroupPrepend" required>
             </div>
         </div>
-        <div class="col-md-3 align-self-center">
+        <div class="col-md-12 align-self-center mt-3">
             <label for="gender" class="form-label">Género</label>
             <div class="d-flex">
                 <div class="form-check pe-5">
@@ -61,16 +61,16 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-12 mt-3">
             <label for="password" class="form-label">Contraseña</label>
             <input type="password" class="form-control" id="password" name="password" required>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-12 mt-3">
             <label for="repassword" class="form-label">Repita Contraseña</label>
             <input type="password" class="form-control" id="repassword" name="repassword" required>
         </div>
-        <div class="col-12">
-            <button class="btn btn-primary" type="submit">Registrarme</button>
+        <div class="col-12 mt-3">
+            <button class="btn btn-primary col-12" type="submit">Registrarme</button>
         </div>
     </form>
 </main>

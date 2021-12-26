@@ -1,6 +1,7 @@
 database\TransferDAO.class
 config\DBConn.class
 controller\ViewsUserController.class
+helpers\OtherData.class
 controller\ViewsController.class
 controller\UserController.class
 database\DatosDB.class

@@ -36,29 +36,25 @@
 %>   
 
 
-    <div id="login-main" class=" d-flex justify-content-center align-items-center">
-        <section class="left-hand">
-            <img src="/img/user_login.svg" />
+    <div class="row d-flex justify-content-center align-items-center">
+        <section  class="d-none d-md-block col-md-6">
+            <img style="width: 100%" src="/img/user_login.svg" />
         </section>
-        <form method="POST" action="/user/login" class="bg-light p-5 rounded">
-            <div class="mb-3">
+        <form method="POST" action="/user/login" class="bg-light py-5 px-3 px-sm-5  rounded col-12 col-md-6">
+            <div class="mb-3 col-12">
                 <label for="user" class="form-label">Usuario</label>
-                <input type="text" class="form-control" id="user" name="username" >
-                <div class="form-text">Nunca compartiremos sus datos con alguien más.</div>
+                <input type="text" class="form-control " id="user" name="username" >
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" name="password" id="password">
             </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                <label class="form-check-label" for="exampleCheck1">Check me out</label>
-            </div>
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto">
+            
+            <div class="row align-items-center justify-content-center justify-content-md-between ">
+                <div class="col-auto ">
                     <button type="submit" class="btn btn-dark">Ingresar</button>
                 </div>
-                <div class="col-auto">
+                <div class="col-auto mt-2">
                     <a href="/view/register" class="link-primary">No tengo cuenta</a>
                 </div>
             </div>

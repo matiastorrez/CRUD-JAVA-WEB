@@ -77,5 +77,27 @@ public class TransferDAO {
         }
 
     }
+    
+    
+     public int totalNumberTransfers(User user)  {
+        String query = "select count(*) as total_transfers from transfers t where t.origin IN(select id_account from accounts where id_user = ?) OR t.destination IN(select id_account from accounts where id_user = ?)";
+        int total = 0;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, user.getId());
+            ps.setInt(2, user.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    total = rs.getInt("total_transfers");
+                }
+                return total;
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudieron obtener las transferencias de la BD", ex);
+        }
+
+    }
+
+     
+  
 
 }

@@ -8,7 +8,9 @@ package controller;
 import database.AccountDAO;
 import database.TransferDAO;
 import database.UserDAO;
+import helpers.OtherData;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -140,8 +142,26 @@ public class UserController extends HttpServlet {
     }
 
     private void profile(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/profile.jsp");
-        miDispatcher.forward(request, response);
+        HttpSession session = request.getSession();
+        User getUser = (User) session.getAttribute("userLogin");
+        AccountDAO accountDB = new AccountDAO();
+        TransferDAO transferDB = new TransferDAO();
+        try {
+            int totalAccounts = accountDB.totalNumberOfAccounts(getUser);
+            int totalAccountsCA = accountDB.totalNumberOfAccountsCA(getUser);
+            int totalAccountsCC = accountDB.totalNumberOfAccountsCC(getUser);
+            int totalTransfers = transferDB.totalNumberTransfers(getUser);
+            OtherData od = new OtherData(totalAccounts, totalAccountsCA, totalAccountsCC, totalTransfers);
+            request.setAttribute("otherData", od.mapOtherData());
+            request.setAttribute("userData", getUser.mapUserData());
+
+        } catch (Exception e) {
+            session.setAttribute("messageDB", e.getMessage());
+        } finally {
+            RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/profile.jsp");
+            miDispatcher.forward(request, response);
+        }
+
     }
 
     private void transfers(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

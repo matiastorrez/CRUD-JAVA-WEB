@@ -5,6 +5,8 @@
  */
 package model;
 
+import java.util.HashMap;
+
 /**
  *
  * @author pol_m
@@ -101,6 +103,19 @@ public class User {
     @Override
     public String toString() {
         return "User{" + "id=" + id + ", username=" + username + ", password=" + password + ", name=" + name + ", lastName=" + lastName + ", gender=" + gender + ", email=" + email + '}';
+    }
+    
+      public HashMap<String, Object> mapUserData() {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("ID usuario", this.id);
+        map.put("Usuario", this.username);
+        map.put("Nombre", this.name);
+        map.put("Apellido", this.lastName);
+        map.put("Genero", this.gender);
+        map.put("Email", this.email);
+        
+        return map;
+        
     }
 
     
