@@ -61,8 +61,8 @@ public class Transfer {
         this.amount = amount;
     }
 
-    public void transfer() {
-        origin.transfer(destination, amount);
+    public boolean transfer() {
+        return origin.transfer(destination, amount);
     }
 
     @Override

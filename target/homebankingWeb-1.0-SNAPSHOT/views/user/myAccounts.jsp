@@ -8,7 +8,17 @@
 
     <h1 class="m-5" >Accounts</h1>
     <a href="/view/user/createaccount">Crear Cuenta</a>
-    <%    List<Account> accounts = (List<Account>) request.getAttribute("accounts");
+
+    <%       
+        String message = (String) session.getAttribute("messageDB");
+        if (message != null) {
+    %>
+    <h1 class="m-5" ><%=message%></h1>
+    <%
+        session.setAttribute("messageDB", null);
+        
+    } else {
+        List<Account> accounts = (List<Account>) request.getAttribute("accounts");
         if (accounts.size() > 0) {
     %>
 
@@ -30,20 +40,21 @@
                 <td><%= account.getTotal()%></td>
             </tr>
         </tbody>
-        <% 
+        <%
             }
         %>
 
     </table>
 
     <%
-    } else {
+        } else {
     %>
 
     <h2>No hay cuentas disponibles</h2>
 
     <%
         }
+    }
     %>
 </main>
 <%@include file="../partials/footer.jsp"%>

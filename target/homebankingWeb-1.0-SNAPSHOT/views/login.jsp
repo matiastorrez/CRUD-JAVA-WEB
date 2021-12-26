@@ -4,15 +4,36 @@
 <main  class="container d-flex flex-column align-items-center gap-2 justify-content-center" >
     <h1 class="text-center mb-3">Online banking</h1>
     <h2 class="text-center mb-5">Ingresá a tu cuenta a continuación:</h2>
-    <%        String message = (String) session.getAttribute("createMessage");
 
-        if (message != null) {
-    %>
-    <h1 class="m-5" ><%=message%></h1>
-    <%
-            session.setAttribute("createMessage", null);
-        }
-    %>   
+    
+<%
+    String messageDB = (String) session.getAttribute("messageDB");
+
+    if (messageDB != null) {
+%>
+    <h1 class="m-5" ><%=messageDB%></h1>
+<%
+       session.setAttribute("messageDB", null);
+    }
+
+    String messageLogin = (String) session.getAttribute("messageLogin");
+
+    if (messageLogin != null) {
+%>
+    <h1 class="m-5" ><%=messageLogin%></h1>
+<%
+       session.setAttribute("messageLogin", null);
+    }
+
+    String messageRegister = (String) session.getAttribute("messageRegister");
+
+    if (messageRegister != null) {
+%>
+    <h1 class="m-5" ><%=messageRegister%></h1>
+<%
+       session.setAttribute("messageRegister", null);
+    }
+%>   
 
 
     <div id="login-main" class=" d-flex justify-content-center align-items-center">

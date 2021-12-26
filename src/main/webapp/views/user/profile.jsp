@@ -5,13 +5,13 @@
 <%@page import="model.User"%>
 <%@include file="../partials/header.jsp"%>
 
-
-<h1 class="m-5" >Bienvenido a tu perfil</h1>
+<main>
+    <h1 class="m-5" >Bienvenido a tu perfil</h1>
 
 <%
-
-    out.print(request.getAttribute("usuarios"));
+    out.print(session.getAttribute("userLogin"));
 %>
+</main>
 
 
 <%@include file="../partials/footer.jsp"%>

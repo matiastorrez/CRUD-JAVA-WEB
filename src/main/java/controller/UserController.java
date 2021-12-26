@@ -9,8 +9,6 @@ import database.AccountDAO;
 import database.TransferDAO;
 import database.UserDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -39,11 +37,9 @@ public class UserController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-
+        try {
             String action = request.getPathInfo();
 
             switch (action) {
@@ -74,38 +70,43 @@ public class UserController extends HttpServlet {
                 default:
 
                     break;
-
             }
 
-        } catch (SQLException | IOException | ServletException ex) {
+        } catch (IOException | ServletException ex) {
             ex.printStackTrace();
         }
     }
 
-    private void login(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
+    private void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
         UserDAO userDB = new UserDAO();
         String userName = request.getParameter("username");
         String pass = request.getParameter("password");
 
-        User getUser = userDB.login(userName, pass);
-        if (getUser != null) {
-            session.setAttribute("userLogin", getUser);
-            response.sendRedirect("/user/profile");
-        } else {
-            String message = "Alguna de sus credenciales es incorrecta";
-            session.setAttribute("createMessage", message);
+        try {
+            User getUser = userDB.login(userName, pass);
+            if (getUser != null) {
+                session.setAttribute("userLogin", getUser);
+                response.sendRedirect("/user/profile");
+            } else {
+                String message = "Alguna de sus credenciales es incorrecta";
+                session.setAttribute("messageLogin", message);
+                response.sendRedirect("/view/login");
+            }
+        } catch (Exception e) {
+            session.setAttribute("messageDB", e.getMessage());
             response.sendRedirect("/view/login");
         }
+
     }
 
-    private void createUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
+    private void createUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
         String pass = request.getParameter("password");
         String repass = request.getParameter("repassword");
         if (!repass.equalsIgnoreCase(pass)) {
             String message = "Las passwords no coinciden";
-            session.setAttribute("createMessage", message);
+            session.setAttribute("messageRegister", message);
             response.sendRedirect("/view/register");
         } else {
             String userName = request.getParameter("username");
@@ -118,15 +119,15 @@ public class UserController extends HttpServlet {
                 boolean isCreated = userDB.createUser(userName, pass, name, lastname, email, gender, repass);
                 if (isCreated) {
                     String message = "Se creo la cuenta con exito";
-                    session.setAttribute("createMessage", message);
+                    session.setAttribute("messageRegister", message);
                     response.sendRedirect("/view/login");
                 } else {
                     String message = "Hubo un error";
-                    session.setAttribute("createMessage", message);
+                    session.setAttribute("messageRegister", message);
                     response.sendRedirect("/view/register");
                 }
             } catch (Exception e) {
-                session.setAttribute("createMessage", e.getMessage());
+                session.setAttribute("messageDB", e.getMessage());
                 response.sendRedirect("/view/register");
             }
         }
@@ -138,15 +139,12 @@ public class UserController extends HttpServlet {
         response.sendRedirect("/");
     }
 
-    private void profile(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
-        UserDAO userDB = new UserDAO();
-        List<User> users = userDB.getUsers();
-        request.setAttribute("usuarios", users);
+    private void profile(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/profile.jsp");
         miDispatcher.forward(request, response);
     }
 
-    private void transfers(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+    private void transfers(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         HttpSession session = request.getSession();
         User getUser = (User) session.getAttribute("userLogin");
         int idAccountUserOrigin = Integer.parseInt(request.getParameter("idAccountUserOrigin"));
@@ -154,98 +152,128 @@ public class UserController extends HttpServlet {
         int idAccountUserDestination = Integer.parseInt(request.getParameter("idAccountUserDestination"));
         double amountTrasfer = Double.parseDouble(request.getParameter("amountTrasfer"));
 
-        PrintWriter out = response.getWriter();
-
         if (getUser != null) {
             UserDAO userDB = new UserDAO();
             AccountDAO accountsDB = new AccountDAO();
             TransferDAO transferDB = new TransferDAO();
-
-            out.println("hola 1");
-
-            Account accountOrigin = accountsDB.getUserAccount(getUser, idAccountUserOrigin);
-            out.println(accountOrigin + " 1");
-
-            if (accountOrigin != null) {
-                User userDestination = userDB.getUserByID(idUserDestination);
-                out.println(userDestination + " 2");
-                if (userDestination != null) {
-                    Account accountDestination = accountsDB.getUserAccount(userDestination, idAccountUserDestination);
-                    out.println(accountDestination + " 3");
-                    if (accountDestination != null) {
-                        Transfer transfer = new Transfer(accountOrigin, accountDestination, amountTrasfer);
-                        transfer.transfer();
-                        transferDB.createTransfer(transfer);
-                        accountOrigin = transfer.getOrigin();
-                        accountDestination = transfer.getDestination();
-                        accountsDB.updateTotalAccount(accountOrigin);
-                        accountsDB.updateTotalAccount(accountDestination);
+            try {
+                Account accountOrigin = accountsDB.getUserAccount(getUser, idAccountUserOrigin);
+                if (accountOrigin != null) {
+                    User userDestination = userDB.getUserByID(idUserDestination);
+                    if (userDestination != null) {
+                        Account accountDestination = accountsDB.getUserAccount(userDestination, idAccountUserDestination);
+                        if (accountDestination != null) {
+                            if (accountDestination.getId() != accountOrigin.getId()) {
+                                Transfer transfer = new Transfer(accountOrigin, accountDestination, amountTrasfer);
+                                if (transfer.transfer()) {
+                                    transferDB.createTransfer(transfer);
+                                    accountOrigin = transfer.getOrigin();
+                                    accountDestination = transfer.getDestination();
+                                    accountsDB.updateTotalAccount(accountOrigin);
+                                    accountsDB.updateTotalAccount(accountDestination);
+                                    String message = "La transaccion de $" + amountTrasfer + " fue un exito";
+                                    session.setAttribute("messageTransfer", message);
+                                } else {
+                                    String message = "La transaccion de $" + amountTrasfer + " no se pudo realizar debido a que la cuenta que quizo utilizar para transferir tiene $" + accountOrigin.getTotal();
+                                    session.setAttribute("messageTransfer", message);
+                                }
+                            } else {
+                                String message = "No se puede realizar una transferencia a la misma cuenta";
+                                session.setAttribute("messageTransfer", message);
+                            }
+                        } else {
+                            String message = "La cuenta n°" + idAccountUserDestination + " que colocó no existe en el usuario destinatario";
+                            session.setAttribute("messageTransfer", message);
+                        }
+                    } else {
+                        String message = "El usuario destinatario con ID " + idUserDestination + " no existe";
+                        session.setAttribute("messageTransfer", message);
                     }
+                } else {
+                    String message = "La cuenta n°" + idAccountUserOrigin + " que selecciono no existe en su usuario";
+                    session.setAttribute("messageTransfer", message);
                 }
+            } catch (Exception e) {
+                session.setAttribute("messageDB", e.getMessage());
+            } finally {
+                response.sendRedirect("/user/mytransfers");
             }
-
-            response.sendRedirect("/user/myaccounts");
-
         } else {
             response.sendRedirect("/view/login");
         }
     }
 
-    private void myTransfers(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
-        PrintWriter out = response.getWriter();
-
+    private void myTransfers(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         HttpSession session = request.getSession();
         User getUser = (User) session.getAttribute("userLogin");
 
         if (getUser != null) {
             TransferDAO transferDB = new TransferDAO();
-
-            List<Transfer> transfers = transferDB.getAllTransfers(getUser);
-            request.setAttribute("transfers", transfers);
-            RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/myTransfers.jsp");
-
-            miDispatcher.forward(request, response);
+            try {
+                List<Transfer> transfers = transferDB.getAllTransfers(getUser);
+                request.setAttribute("transfers", transfers);
+            } catch (Exception e) {
+                session.setAttribute("messageDB", e.getMessage());
+            } finally {
+                RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/myTransfers.jsp");
+                miDispatcher.forward(request, response);
+            }
         } else {
             response.sendRedirect("/view/login");
         }
 
     }
 
-    private void myAccounts(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+    private void myAccounts(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         HttpSession session = request.getSession();
         User getUser = (User) session.getAttribute("userLogin");
 
         if (getUser != null) {
             AccountDAO accountsDB = new AccountDAO();
-            List<Account> accounts = accountsDB.getUserAccounts(getUser);
-
-            request.setAttribute("accounts", accounts);
-            RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/myAccounts.jsp");
-
-            miDispatcher.forward(request, response);
+            try {
+                List<Account> accounts = accountsDB.getUserAccounts(getUser);
+                request.setAttribute("accounts", accounts);
+            } catch (Exception e) {
+                session.setAttribute("messageDB", e.getMessage());
+            } finally {
+                RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/myAccounts.jsp");
+                miDispatcher.forward(request, response);
+            }
         } else {
             response.sendRedirect("/view/login");
         }
 
     }
 
-    private void createAccount(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+    private void createAccount(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         HttpSession session = request.getSession();
         User getUser = (User) session.getAttribute("userLogin");
-
         if (getUser != null) {
-            AccountDAO accountsDB = new AccountDAO();
             String account_type = request.getParameter("account_type");
+            String password = request.getParameter("password");
             Account account = new Account(account_type);
-
-            boolean isCreated = accountsDB.createAccout(getUser, account);
-
-            if (isCreated) {
-                response.sendRedirect("/user/myaccounts");
-            } else {
+            try {
+                AccountDAO accountsDB = new AccountDAO();
+                UserDAO userDB = new UserDAO();
+                String message;
+                boolean isPassword = userDB.isUserPassword(getUser, password);
+                if (isPassword) {
+                    boolean isCreated = accountsDB.createAccout(getUser, account);
+                    if (isCreated) {
+                        message = "Cuenta creada";
+                    } else {
+                        message = "No se pudo crear la cuenta";
+                    }
+                    session.setAttribute("messageCreate", message);
+                } else {
+                    message = "Su password no es correcta";
+                    session.setAttribute("messageCreate", message);
+                }
+            } catch (Exception e) {
+                session.setAttribute("messageDB", e.getMessage());
+            } finally {
                 response.sendRedirect("/view/user/createaccount");
             }
-
         } else {
             response.sendRedirect("/view/login");
         }

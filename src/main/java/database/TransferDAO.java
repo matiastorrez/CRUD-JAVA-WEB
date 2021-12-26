@@ -30,7 +30,7 @@ public class TransferDAO {
 
     }
     
-    public boolean createTransfer(Transfer transfer) throws SQLException {
+    public boolean createTransfer(Transfer transfer)  {
 
         String query = "INSERT INTO transfers (origin,destination,amount) VALUES (?,?,?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -44,7 +44,7 @@ public class TransferDAO {
         }
     }
 
-    public List<Transfer> getAllTransfers(User user) throws SQLException {
+    public List<Transfer> getAllTransfers(User user)  {
         AccountDAO accountDB = new AccountDAO();
         List<Transfer> transfers = new ArrayList<>();
 

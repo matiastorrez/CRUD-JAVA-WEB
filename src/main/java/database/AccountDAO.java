@@ -9,11 +9,8 @@ import config.DBConn;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import model.Account;
 import model.User;
 
@@ -30,7 +27,7 @@ public class AccountDAO {
         this.connection = conn.getConnection("homebanking", DatosDB.USER, DatosDB.PASSWORD);
     }
     
-    public List<Account> getUserAccounts(User user) throws SQLException {
+    public List<Account> getUserAccounts(User user)  {
 
         String query = "select a.* from users u inner join accounts a on u.id = a.id_user where u.id = ?";
         List<Account> accountsDB = new ArrayList<>();
@@ -49,7 +46,7 @@ public class AccountDAO {
         }
     }
 
-    public Account getUserAccount(User user, int idAccount) throws SQLException {
+    public Account getUserAccount(User user, int idAccount) {
         Account getAccount = null;
         String query = "select * from users u inner join accounts a on u.id = a.id_user where u.id = ? and a.id_account = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -71,7 +68,7 @@ public class AccountDAO {
         }
     }
 
-    public boolean createAccout(User user, Account account) throws SQLException {
+    public boolean createAccout(User user, Account account) {
 
         String query = "INSERT INTO accounts (account_type,total,id_user) VALUES (?,?,?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -86,7 +83,7 @@ public class AccountDAO {
 
     }
 
-    public boolean updateTotalAccount(Account account) throws SQLException {
+    public boolean updateTotalAccount(Account account) {
         String query = "UPDATE accounts SET total = ? where id_account = ? ";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setDouble(1, account.getTotal());
@@ -98,7 +95,7 @@ public class AccountDAO {
         }
     }
 
-    public Account getAccountWithUser(int id) throws SQLException {
+    public Account getAccountWithUser(int id) {
         User user = null;
         Account account = null;
         String query = "select * from accounts a inner join users u on u.id = a.id_user where a.id_account = ?";

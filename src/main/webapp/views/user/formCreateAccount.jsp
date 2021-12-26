@@ -5,6 +5,29 @@
 
     <h1>Crear Cuenta</h1>
 
+<%
+    String message = (String) session.getAttribute("messageDB");
+
+    if (message != null) {
+%>
+    <h1 class="m-5" ><%=message%></h1>
+<%
+        session.setAttribute("messageDB", null);
+    }
+%>   
+    
+<%        
+    String messageCreate = (String) session.getAttribute("messageCreate");
+
+    if (messageCreate != null) {
+%>
+        <h1 class="m-5" ><%=messageCreate%></h1>
+<%
+        session.setAttribute("messageCreate", null);
+    }
+%>   
+
+
     <form method="POST" action="/user/createaccount" class="bg-light p-5 rounded">
 
 

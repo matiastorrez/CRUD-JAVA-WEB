@@ -2,15 +2,24 @@
 <%@include file="./partials/header.jsp" %>
 <main class="container d-flex justify-content-center align-items-center gap-5" >
 
-    <%        String message = (String) session.getAttribute("createMessage");
-
-        if (message != null) {
-    %>
-    <h1 class="m-5" ><%=message%></h1>
-    <%
-        session.setAttribute("createMessage", null);
-        }
-    %>   
+<%
+    String message = (String) session.getAttribute("messageDB");
+    if (message != null) {
+%>
+        <h1 class="m-5" ><%=message%></h1>
+<%
+        session.setAttribute("messageDB", null);
+    }
+  
+    String messageRegister = (String) session.getAttribute("messageRegister");
+    if (messageRegister != null) {
+%>
+    <h1 class="m-5" ><%=messageRegister%></h1>
+<%
+    session.setAttribute("messageRegister", null);
+    }
+%>   
+    
     <section class="left-hand">
         <img src="/img/user_login.svg" />
     </section>

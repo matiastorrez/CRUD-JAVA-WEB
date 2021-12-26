@@ -9,7 +9,6 @@ import config.DBConn;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.User;
@@ -27,8 +26,8 @@ public class UserDAO {
         this.connection = conn.getConnection("homebanking", DatosDB.USER, DatosDB.PASSWORD);
 
     }
-    
-    public User getUser(int id) throws SQLException {
+
+    public User getUser(int id) {
 
         User user = null;
         String query = "SELECT * FROM users WHERE id = ?";
@@ -54,7 +53,7 @@ public class UserDAO {
         }
     }
 
-    public List<User> getUsers(int limit) throws SQLException {
+    public List<User> getUsers(int limit) {
         List<User> usersDB = new ArrayList<>();
         String query = "SELECT * FROM users LIMIT ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -70,7 +69,7 @@ public class UserDAO {
         }
     }
 
-    public List<User> getUsers() throws SQLException {
+    public List<User> getUsers() {
 
         List<User> usersDB = new ArrayList<>();
         String query = "SELECT * FROM users";
@@ -86,7 +85,7 @@ public class UserDAO {
         }
     }
 
-    public User getUserByID(int id) throws SQLException {
+    public User getUserByID(int id) {
 
         User user = null;
         String query = "SELECT * FROM users WHERE id = ?";
@@ -106,11 +105,11 @@ public class UserDAO {
             }
 
         } catch (Exception ex) {
-            throw new RuntimeException("No se pudo obtener el usuario  con id: " + id+ " de la BD", ex);
+            throw new RuntimeException("No se pudo obtener el usuario  con id: " + id + " de la BD", ex);
         }
     }
 
-    public User login(String username, String password) throws SQLException {
+    public User login(String username, String password) {
 
         User user = null;
         String query = "SELECT * FROM users WHERE username = ? AND password = ?";
@@ -136,7 +135,7 @@ public class UserDAO {
 
     }
 
-    public boolean createUser(String username, String password, String name, String lastname, String email, String gender, String repass) throws SQLException {
+    public boolean createUser(String username, String password, String name, String lastname, String email, String gender, String repass) {
 
         String query = "INSERT INTO users(username, password, name, last_name, email, gender) VALUES(?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -152,4 +151,16 @@ public class UserDAO {
         }
     }
 
+    public boolean isUserPassword(User user, String password) {
+        String query = "SELECT * from users where id = ? AND password = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, user.getId());
+            ps.setString(2, password);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudo encontrar la password en la BD", ex);
+        }
+    }
 }

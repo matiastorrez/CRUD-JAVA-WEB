@@ -59,22 +59,26 @@ public class Account {
     public User getUser() {
         return user;
     }
-    
-    
 
     public void deposit(double amount) {
         this.total += amount;
     }
-    
-    public void extract(double amount){
-        if(this.getTotal() > amount){
-          this.total -= amount;
+
+    public boolean extract(double amount) {
+        if (this.getTotal() > amount) {
+            this.total -= amount;
+            return true;
         }
+        return false;
+
     }
 
-    public void transfer(Account accountDestination, double amount) {
-            extract(amount);
+    public boolean transfer(Account accountDestination, double amount) {
+        if (extract(amount)) {
             accountDestination.deposit(amount);
+            return true;
+        }
+        return false;
     }
 
     @Override
