@@ -20,6 +20,7 @@ public class User {
     private String lastName;
     private String gender;
     private String email;
+    
 
     public User(String username, String password, String name, String lastName, String email, String gender) {
         this.username = username;
@@ -105,7 +106,7 @@ public class User {
         return "User{" + "id=" + id + ", username=" + username + ", password=" + password + ", name=" + name + ", lastName=" + lastName + ", gender=" + gender + ", email=" + email + '}';
     }
     
-      public HashMap<String, Object> mapUserData() {
+    public HashMap<String, Object> mapUserData() {
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("ID usuario", this.id);
         map.put("Usuario", this.username);

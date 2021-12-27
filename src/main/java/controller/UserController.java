@@ -9,8 +9,8 @@ import database.AccountDAO;
 import database.TransferDAO;
 import database.UserDAO;
 import helpers.OtherData;
+import helpers.TypeMessage;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -92,7 +92,8 @@ public class UserController extends HttpServlet {
                 response.sendRedirect("/user/profile");
             } else {
                 String message = "Alguna de sus credenciales es incorrecta";
-                session.setAttribute("messageLogin", message);
+
+                session.setAttribute("messageLogin", new TypeMessage("error", message));
                 response.sendRedirect("/view/login");
             }
         } catch (Exception e) {
@@ -108,7 +109,7 @@ public class UserController extends HttpServlet {
         String repass = request.getParameter("repassword");
         if (!repass.equalsIgnoreCase(pass)) {
             String message = "Las passwords no coinciden";
-            session.setAttribute("messageRegister", message);
+            session.setAttribute("messageRegister", new TypeMessage("error", message));
             response.sendRedirect("/view/register");
         } else {
             String userName = request.getParameter("username");
@@ -121,11 +122,11 @@ public class UserController extends HttpServlet {
                 boolean isCreated = userDB.createUser(userName, pass, name, lastname, email, gender, repass);
                 if (isCreated) {
                     String message = "Se creo la cuenta con exito";
-                    session.setAttribute("messageRegister", message);
+                    session.setAttribute("messageRegister", new TypeMessage("success", message));
                     response.sendRedirect("/view/login");
                 } else {
                     String message = "Hubo un error";
-                    session.setAttribute("messageRegister", message);
+                    session.setAttribute("messageRegister", new TypeMessage("error", message));
                     response.sendRedirect("/view/register");
                 }
             } catch (Exception e) {
@@ -192,31 +193,37 @@ public class UserController extends HttpServlet {
                                     accountsDB.updateTotalAccount(accountOrigin);
                                     accountsDB.updateTotalAccount(accountDestination);
                                     String message = "La transaccion de $" + amountTrasfer + " fue un exito";
-                                    session.setAttribute("messageTransfer", message);
+                                    session.setAttribute("messageTransfer", new TypeMessage("success", message));
+                                    response.sendRedirect("/user/mytransfers");
+
                                 } else {
                                     String message = "La transaccion de $" + amountTrasfer + " no se pudo realizar debido a que la cuenta que quizo utilizar para transferir tiene $" + accountOrigin.getTotal();
-                                    session.setAttribute("messageTransfer", message);
+                                    session.setAttribute("messageTransfer", new TypeMessage("error", message));
+                                    response.sendRedirect("/view/user/transfers");
                                 }
                             } else {
                                 String message = "No se puede realizar una transferencia a la misma cuenta";
-                                session.setAttribute("messageTransfer", message);
+                                session.setAttribute("messageTransfer", new TypeMessage("error", message));
+                                response.sendRedirect("/view/user/transfers");
                             }
                         } else {
                             String message = "La cuenta n°" + idAccountUserDestination + " que colocó no existe en el usuario destinatario";
-                            session.setAttribute("messageTransfer", message);
+                            session.setAttribute("messageTransfer", new TypeMessage("error", message));
+                            response.sendRedirect("/view/user/transfers");
                         }
                     } else {
                         String message = "El usuario destinatario con ID " + idUserDestination + " no existe";
-                        session.setAttribute("messageTransfer", message);
+                        session.setAttribute("messageTransfer", new TypeMessage("error", message));
+                        response.sendRedirect("/view/user/transfers");
                     }
                 } else {
                     String message = "La cuenta n°" + idAccountUserOrigin + " que selecciono no existe en su usuario";
-                    session.setAttribute("messageTransfer", message);
+                    session.setAttribute("messageTransfer", new TypeMessage("error", message));
+                    response.sendRedirect("/view/user/transfers");
                 }
             } catch (Exception e) {
                 session.setAttribute("messageDB", e.getMessage());
-            } finally {
-                response.sendRedirect("/user/mytransfers");
+                response.sendRedirect("/view/user/transfers");
             }
         } else {
             response.sendRedirect("/view/login");
@@ -281,18 +288,23 @@ public class UserController extends HttpServlet {
                     boolean isCreated = accountsDB.createAccout(getUser, account);
                     if (isCreated) {
                         message = "Cuenta creada";
+                        session.setAttribute("messageCreate", new TypeMessage("success", message));
+                        response.sendRedirect("/user/myaccounts");
                     } else {
                         message = "No se pudo crear la cuenta";
+                        session.setAttribute("messageCreate", new TypeMessage("error", message));
+                        response.sendRedirect("/view/user/createaccount");
                     }
-                    session.setAttribute("messageCreate", message);
                 } else {
                     message = "Su password no es correcta";
-                    session.setAttribute("messageCreate", message);
+                    session.setAttribute("messageCreate", new TypeMessage("error", message));
+                    response.sendRedirect("/view/user/createaccount");
+
                 }
+
             } catch (Exception e) {
                 session.setAttribute("messageDB", e.getMessage());
-            } finally {
-                response.sendRedirect("/view/user/createaccount");
+
             }
         } else {
             response.sendRedirect("/view/login");
