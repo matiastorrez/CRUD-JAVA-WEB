@@ -79,6 +79,9 @@ public class UserController extends HttpServlet {
                 case "/createfavourite":
                     createFavourite(request, response);
                     break;
+                case "/changepassword":
+                    changePassword(request, response);
+                    break;
                 default:
 
                     break;
@@ -86,6 +89,55 @@ public class UserController extends HttpServlet {
 
         } catch (IOException | ServletException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private void changePassword(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+        HttpSession session = request.getSession();
+        User getUser = (User) session.getAttribute("userLogin");
+
+        if (getUser != null) {
+            UserDAO userDB = new UserDAO();
+            String currentPassword = request.getParameter("currentPassword");
+            String newPassowrd = request.getParameter("newPassword");
+            String repeatNewPassword = request.getParameter("repeatNewPassword");
+            String message;
+
+            if (newPassowrd.equals(repeatNewPassword)) {
+
+                boolean isPasswordCorrect = userDB.isUserPassword(getUser, currentPassword);
+
+                if (!newPassowrd.equals(currentPassword)) {
+                    if (isPasswordCorrect) {
+                        try {
+                            userDB.changePassword(getUser, newPassowrd);
+                            message = "Se cambio la password correctamente";
+                            session.setAttribute("messageChangePassword", new TypeMessage("success", message));
+                        } catch (Exception e) {
+                            session.setAttribute("messageDB", e.getMessage());
+                        } finally {
+                            response.sendRedirect("/view/user/form-change-password");
+                        }
+                    } else {
+                        message = "La contraseña no coincide con su usuario";
+                        session.setAttribute("messageChangePassword", new TypeMessage("error", message));
+                        response.sendRedirect("/view/user/form-change-password");
+                    }
+
+                } else {
+                    message = "La contraseña no puede ser la misma que la actual";
+                    session.setAttribute("messageChangePassword", new TypeMessage("error", message));
+                    response.sendRedirect("/view/user/form-change-password");
+                }
+
+            } else {
+                message = "Las contraseñas deben ser iguales";
+                session.setAttribute("messageChangePassword", new TypeMessage("error", message));
+                response.sendRedirect("/view/user/form-change-password");
+            }
+        } else {
+            response.sendRedirect("/view/login");
         }
     }
 
@@ -166,7 +218,7 @@ public class UserController extends HttpServlet {
                 }
             } catch (Exception e) {
                 session.setAttribute("messageDB", e.getMessage());
-            } 
+            }
         } else {
             response.sendRedirect("/view/login");
         }
@@ -248,8 +300,8 @@ public class UserController extends HttpServlet {
                 int totalAccountsCC = accountDB.totalNumberOfAccountsCC(getUser);
                 int totalTransfers = transferDB.totalNumberTransfers(getUser);
                 double totalMoneyAccounts = accountDB.totalMoneyAccounts(getUser);
-                
-                OtherData od = new OtherData(totalAccounts, totalAccountsCA, totalAccountsCC, totalTransfers,totalMoneyAccounts);
+
+                OtherData od = new OtherData(totalAccounts, totalAccountsCA, totalAccountsCC, totalTransfers, totalMoneyAccounts);
                 request.setAttribute("otherData", od.mapOtherData());
                 request.setAttribute("userData", getUser.mapUserData());
 

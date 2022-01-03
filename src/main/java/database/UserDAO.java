@@ -163,8 +163,7 @@ public class UserDAO {
             throw new RuntimeException("No se pudo encontrar la password en la BD", ex);
         }
     }
-    
-    
+
     public boolean existUser(int idUser) {
         String query = "SELECT * from users where id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -173,7 +172,18 @@ public class UserDAO {
                 return rs.next();
             }
         } catch (Exception ex) {
-            throw new RuntimeException("No se pudo encontrar el usuario con id "+ idUser + " en la BD", ex);
+            throw new RuntimeException("No se pudo encontrar el usuario con id " + idUser + " en la BD", ex);
+        }
+    }
+
+    public boolean changePassword(User user, String password) {
+        String query = "UPDATE users SET password = ? where id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, password);
+            ps.setInt(2, user.getId());
+            return ps.executeUpdate() > 0;
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudo encontrar la password en la BD", ex);
         }
     }
 }

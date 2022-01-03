@@ -26,62 +26,66 @@
         HashMap<String, Object> otherData = (HashMap<String, Object>) request.getAttribute("otherData");
         HashMap<String, Object> userData = (HashMap<String, Object>) request.getAttribute("userData");
 
-%>   
+    %>   
 
-<div class="card mb-3 mx-auto " >
-    <div class="row g-0">
-        <div class="col-sm-4 align-self-center">
-            <img src="/img/<%= user.getGender().equals("male") ? "male" : "female"%>.jpg" class="img-fluid col-12 rounded-start" alt="...">
-        </div>
-        <div class="col-sm-8 border border-1 d-flex align-items-center">
-            <div class="card-body  ">
-                <table class="table table-borderless ">
+    <div class="card mb-3 mx-auto " >
+        <div class="row g-0">
+            <div class="col-sm-4 align-self-center">
+                <img src="/img/<%= user.getGender().equals("Masculino") ? "male" : "female"%>.jpg" class="img-fluid col-12 rounded-start" alt="...">
+            </div>
+            <div class="col-sm-8 border border-1 d-flex align-items-center">
+                <div class="card-body  ">
+                    <table class="table table-borderless ">
 
-                    <%
-                        Iterator<String> userDataIt = userData.keySet().iterator();
-                        while (userDataIt.hasNext()) {
-                            String clave = userDataIt.next();
-                            Object valor = userData.get(clave);
-                    %>
-                    <tr>
-                        <td class="card-text fw-bolder ">
-                            <%=clave%>
-                        </td>
-                        <td class="card-text text-center text-break ">
-                            <%=valor%>
-                        </td>
-                    </tr>
-                    <%
-                        }
-                    %>
-                </table>
+                        <%
+                            Iterator<String> userDataIt = userData.keySet().iterator();
+                            while (userDataIt.hasNext()) {
+                                String clave = userDataIt.next();
+                                Object valor = userData.get(clave);
+                        %>
+                        <tr>
+                            <td class="card-text fw-bolder ">
+                                <%=clave%>
+                            </td>
+                            <td class="card-text text-center text-break ">
+                                <%=valor%>
+                            </td>
+                        </tr>
+                        <%
+                            }
+                        %>
+                        <tr>
+                            <td colspan=2 class="text-center "><a href="/view/user/form-change-password" class="btn btn-primary col-12 col-md-6">Cambiar Password</a></td>
+                        </tr>
+
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<h2 class="text-center my-5">Otros datos</h2>
+    <h2 class="text-center my-5">Otros datos</h2>
 
 
-<table class="table border border-1">
+    <table class="table border border-1">
 
-    <%            Iterator<String> otherDataIt = otherData.keySet().iterator();
-        while (otherDataIt.hasNext()) {
-            String clave = otherDataIt.next();
-            Object valor = otherData.get(clave);
-    %>
-    <tr>
-        <td class="card-text fw-bolder ">
-            <%=clave%>
-        </td>
-        <td class="card-text text-end ">
-            <%=valor%>
-        </td>
-    </tr>
-    <%
-        }
-    %>
-</table>
+        <%            Iterator<String> otherDataIt = otherData.keySet().iterator();
+            while (otherDataIt.hasNext()) {
+                String clave = otherDataIt.next();
+                Object valor = otherData.get(clave);
+        %>
+        <tr>
+            <td class="card-text fw-bolder ">
+                <%=clave%>
+            </td>
+            <td class="card-text text-end ">
+                <%=valor%>
+            </td>
+        </tr>
+        <%
+            }
+        %>
+    </table>
 </main>
 <%
     }
