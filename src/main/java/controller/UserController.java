@@ -147,20 +147,24 @@ public class UserController extends HttpServlet {
         User getUser = (User) session.getAttribute("userLogin");
         AccountDAO accountDB = new AccountDAO();
         TransferDAO transferDB = new TransferDAO();
-        try {
-            int totalAccounts = accountDB.totalNumberOfAccounts(getUser);
-            int totalAccountsCA = accountDB.totalNumberOfAccountsCA(getUser);
-            int totalAccountsCC = accountDB.totalNumberOfAccountsCC(getUser);
-            int totalTransfers = transferDB.totalNumberTransfers(getUser);
-            OtherData od = new OtherData(totalAccounts, totalAccountsCA, totalAccountsCC, totalTransfers);
-            request.setAttribute("otherData", od.mapOtherData());
-            request.setAttribute("userData", getUser.mapUserData());
+        if (getUser != null) {
+            try {
+                int totalAccounts = accountDB.totalNumberOfAccounts(getUser);
+                int totalAccountsCA = accountDB.totalNumberOfAccountsCA(getUser);
+                int totalAccountsCC = accountDB.totalNumberOfAccountsCC(getUser);
+                int totalTransfers = transferDB.totalNumberTransfers(getUser);
+                OtherData od = new OtherData(totalAccounts, totalAccountsCA, totalAccountsCC, totalTransfers);
+                request.setAttribute("otherData", od.mapOtherData());
+                request.setAttribute("userData", getUser.mapUserData());
 
-        } catch (Exception e) {
-            session.setAttribute("messageDB", e.getMessage());
-        } finally {
-            RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/profile.jsp");
-            miDispatcher.forward(request, response);
+            } catch (Exception e) {
+                session.setAttribute("messageDB", e.getMessage());
+            } finally {
+                RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/profile.jsp");
+                miDispatcher.forward(request, response);
+            }
+        } else {
+            response.sendRedirect("/view/login");
         }
 
     }
@@ -199,31 +203,31 @@ public class UserController extends HttpServlet {
                                 } else {
                                     String message = "La transaccion de $" + amountTrasfer + " no se pudo realizar debido a que la cuenta que quizo utilizar para transferir tiene $" + accountOrigin.getTotal();
                                     session.setAttribute("messageTransfer", new TypeMessage("error", message));
-                                    response.sendRedirect("/view/user/transfers");
+                                    response.sendRedirect("/view/user/form-transfers");
                                 }
                             } else {
                                 String message = "No se puede realizar una transferencia a la misma cuenta";
                                 session.setAttribute("messageTransfer", new TypeMessage("error", message));
-                                response.sendRedirect("/view/user/transfers");
+                                response.sendRedirect("/view/user/form-transfers");
                             }
                         } else {
                             String message = "La cuenta n°" + idAccountUserDestination + " que colocó no existe en el usuario destinatario";
                             session.setAttribute("messageTransfer", new TypeMessage("error", message));
-                            response.sendRedirect("/view/user/transfers");
+                            response.sendRedirect("/view/user/form-transfers");
                         }
                     } else {
                         String message = "El usuario destinatario con ID " + idUserDestination + " no existe";
                         session.setAttribute("messageTransfer", new TypeMessage("error", message));
-                        response.sendRedirect("/view/user/transfers");
+                        response.sendRedirect("/view/user/form-transfers");
                     }
                 } else {
                     String message = "La cuenta n°" + idAccountUserOrigin + " que selecciono no existe en su usuario";
                     session.setAttribute("messageTransfer", new TypeMessage("error", message));
-                    response.sendRedirect("/view/user/transfers");
+                    response.sendRedirect("/view/user/form-transfers");
                 }
             } catch (Exception e) {
                 session.setAttribute("messageDB", e.getMessage());
-                response.sendRedirect("/view/user/transfers");
+                response.sendRedirect("/view/user/form-transfers");
             }
         } else {
             response.sendRedirect("/view/login");
@@ -269,7 +273,6 @@ public class UserController extends HttpServlet {
         } else {
             response.sendRedirect("/view/login");
         }
-
     }
 
     private void createAccount(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -293,12 +296,12 @@ public class UserController extends HttpServlet {
                     } else {
                         message = "No se pudo crear la cuenta";
                         session.setAttribute("messageCreate", new TypeMessage("error", message));
-                        response.sendRedirect("/view/user/createaccount");
+                        response.sendRedirect("/view/user/form-accounts");
                     }
                 } else {
                     message = "Su password no es correcta";
                     session.setAttribute("messageCreate", new TypeMessage("error", message));
-                    response.sendRedirect("/view/user/createaccount");
+                    response.sendRedirect("/view/user/form-accounts");
 
                 }
 

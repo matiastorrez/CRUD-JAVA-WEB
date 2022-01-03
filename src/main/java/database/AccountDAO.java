@@ -29,7 +29,7 @@ public class AccountDAO {
     
     public List<Account> getUserAccounts(User user)  {
 
-        String query = "select a.* from users u inner join accounts a on u.id = a.id_user where u.id = ?";
+        String query = "select a.* from users u inner join accounts a on u.id = a.id_user where u.id = ? order by a.id_account desc";
         List<Account> accountsDB = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, user.getId());

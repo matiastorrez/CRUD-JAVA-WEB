@@ -11,9 +11,9 @@
 <main>
 
 
-    <h1 class="text-center my-5 " >Transfers</h1>
+    <h1 class="text-center my-5 " >Transferencias</h1>
     <div class="my-5 mx-auto text-center">
-        <a class='btn btn-primary' href="/view/user/transfers">Realizar una transferencia</a>
+        <a class='btn btn-primary' href="/view/user/form-transfers">Realizar una transferencia</a>
     </div>
 <%      
     String message = (String) session.getAttribute("messageDB");
@@ -75,7 +75,7 @@ TypeMessage messageTransfer = (TypeMessage) session.getAttribute("messageTransfe
         } else {
 %>
 
-    <h2>No hay transferencias disponibles</h2>
+    <h2 class="text-center text-break">No hay transferencias realizadas</h2>
 
 <%
             }

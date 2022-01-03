@@ -7,9 +7,9 @@
 <%@include file="../partials/header.jsp"%>
 <main>
 
-    <h1 class="text-center my-5" >Accounts</h1>
+    <h1 class="text-center my-5" >Cuentas</h1>
     <div class="my-5 mx-auto text-center">
-        <a class="btn btn-primary " href="/view/user/createaccount">Crear Cuenta</a>
+        <a class="btn btn-primary " href="/view/user/form-accounts">Crear Cuenta</a>
     </div>
 
     <%        String message = (String) session.getAttribute("messageDB");
@@ -62,7 +62,7 @@
     } else {
     %>
 
-    <h2>No hay cuentas disponibles</h2>
+    <h2 class="text-center text-break">No hay cuentas creadas</h2>
 
     <%
             }

@@ -7,6 +7,7 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -42,12 +43,15 @@ public class ViewsController extends HttpServlet {
                 response.sendRedirect("/views/profile.jsp");
             } else {
                 String action = request.getPathInfo();
+                RequestDispatcher miDispatcher;
                 switch (action) {
                     case "/login":
-                        response.sendRedirect("/views/login.jsp");
+                        miDispatcher = request.getRequestDispatcher("/views/login.jsp");
+                        miDispatcher.forward(request, response);
                         break;
                     case "/register":
-                        response.sendRedirect("/views/register.jsp");
+                        miDispatcher = request.getRequestDispatcher("/views/register.jsp");
+                        miDispatcher.forward(request, response);
                         break;
                     case "/":
                         response.sendRedirect("/");

@@ -55,7 +55,7 @@ public class TransferDAO {
 //inner join users uo on uo.id = ao.id_user
 //inner join users ud on ud.id = ad.id_user
 //where t.origin IN(select id_account from accounts where id_user = ?) OR t.destination IN(select id_account from accounts where id_user = ?);
-        String query = "select * from transfers t where t.origin IN(select id_account from accounts where id_user = ?) OR t.destination IN(select id_account from accounts where id_user = ?)";
+        String query = "select * from transfers t where t.origin IN(select id_account from accounts where id_user = ?) OR t.destination IN(select id_account from accounts where id_user = ?) order by t.id desc";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, user.getId());
             ps.setInt(2, user.getId());

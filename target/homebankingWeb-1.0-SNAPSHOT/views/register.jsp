@@ -54,13 +54,13 @@
                 <label for="gender" class="form-label">Género</label>
                 <div class="d-flex">
                     <div class="form-check pe-5">
-                        <input class="form-check-input" type="radio" name="gender" id="gender" value="female" checked>
+                        <input class="form-check-input" type="radio" name="gender" id="gender" value="Femenino" checked>
                         <label class="form-check-label" for="female">
                             F
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="gender" id="gender" value="male">
+                        <input class="form-check-input" type="radio" name="gender" id="gender" value="Masculino">
                         <label class="form-check-label" for="male">
                             M
                         </label>

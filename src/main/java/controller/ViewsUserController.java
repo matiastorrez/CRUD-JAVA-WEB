@@ -7,6 +7,7 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -42,12 +43,15 @@ public class ViewsUserController extends HttpServlet {
                 response.sendRedirect("/views/login.jsp");
             } else {
                 String action = request.getPathInfo();
+                RequestDispatcher miDispatcher;
                 switch (action) {
-                    case "/createaccount":
-                        response.sendRedirect("/views/user/formCreateAccount.jsp");
+                    case "/form-accounts":
+                        miDispatcher = request.getRequestDispatcher("/views/user/formCreateAccount.jsp");
+                        miDispatcher.forward(request, response);
                         break;
-                    case "/transfers":
-                        response.sendRedirect("/views/user/formTransfers.jsp");
+                    case "/form-transfers":
+                         miDispatcher = request.getRequestDispatcher("/views/user/formTransfers.jsp");
+                        miDispatcher.forward(request, response);
                         break;
                     default:
                         response.sendRedirect("/views/404.html");
