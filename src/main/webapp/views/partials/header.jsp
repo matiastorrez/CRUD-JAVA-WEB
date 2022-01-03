@@ -34,6 +34,9 @@
                        // String avatar = (String) session.getAttribute("avatar");
                 %>
                 <ul class="navbar-nav mb-2 mb-lg-0">
+                     <li class="nav-item">
+                        <a class="nav-link" href="/user/myfavourites">Favoritos</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/user/myaccounts">Mis Cuentas</a>
                     </li>

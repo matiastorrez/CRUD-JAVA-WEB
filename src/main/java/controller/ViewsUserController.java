@@ -53,6 +53,10 @@ public class ViewsUserController extends HttpServlet {
                          miDispatcher = request.getRequestDispatcher("/views/user/formTransfers.jsp");
                         miDispatcher.forward(request, response);
                         break;
+                    case "/form-favourites":
+                         miDispatcher = request.getRequestDispatcher("/views/user/formFavourites.jsp");
+                        miDispatcher.forward(request, response);
+                        break;
                     default:
                         response.sendRedirect("/views/404.html");
                         break;

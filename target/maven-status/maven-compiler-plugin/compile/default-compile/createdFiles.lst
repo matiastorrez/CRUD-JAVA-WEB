@@ -9,5 +9,6 @@ helpers\OtherData.class
 helpers\TypeMessage.class
 controller\ViewsController.class
 database\DatosDB.class
+database\FavouriteDAO.class
 model\Account.class
 model\User.class

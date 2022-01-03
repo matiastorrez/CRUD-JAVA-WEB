@@ -23,7 +23,7 @@
         session.setAttribute("messageDB", null);
     } else {
 
-        HashMap<String, Integer> otherData = (HashMap<String, Integer>) request.getAttribute("otherData");
+        HashMap<String, Object> otherData = (HashMap<String, Object>) request.getAttribute("otherData");
         HashMap<String, Object> userData = (HashMap<String, Object>) request.getAttribute("userData");
 
 %>   
@@ -68,7 +68,7 @@
     <%            Iterator<String> otherDataIt = otherData.keySet().iterator();
         while (otherDataIt.hasNext()) {
             String clave = otherDataIt.next();
-            int valor = otherData.get(clave);
+            Object valor = otherData.get(clave);
     %>
     <tr>
         <td class="card-text fw-bolder ">

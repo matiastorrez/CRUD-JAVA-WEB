@@ -163,4 +163,17 @@ public class UserDAO {
             throw new RuntimeException("No se pudo encontrar la password en la BD", ex);
         }
     }
+    
+    
+    public boolean existUser(int idUser) {
+        String query = "SELECT * from users where id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, idUser);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudo encontrar el usuario con id "+ idUser + " en la BD", ex);
+        }
+    }
 }

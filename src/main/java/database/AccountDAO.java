@@ -175,5 +175,20 @@ public class AccountDAO {
         }
     }
     
-
+     public double totalMoneyAccounts(User user){
+         String query = "select Sum(total) as total_accounts from accounts where id_user = ?;";
+        double total = 0;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, user.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    total =  rs.getDouble("total_accounts");
+                }
+            }
+            return total;
+        } catch (Exception ex) {
+            throw new RuntimeException("No se pudo obtener el total de todas las cuenta con el usuario de la BD", ex);
+        }
+     }
+     
 }

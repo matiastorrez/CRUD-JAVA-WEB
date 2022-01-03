@@ -48,6 +48,12 @@ public class User {
         this(username,name,lastName,email,gender);
         this.id = id;
     }
+    
+    public User(int id, String username, String email){
+        this.id = id;
+        this.username = username;
+        this.email = email;
+    }
 
     public int getId() {
         return id;

@@ -6,6 +6,7 @@
 package controller;
 
 import database.AccountDAO;
+import database.FavouriteDAO;
 import database.TransferDAO;
 import database.UserDAO;
 import helpers.OtherData;
@@ -69,6 +70,15 @@ public class UserController extends HttpServlet {
                 case "/createaccount":
                     createAccount(request, response);
                     break;
+                case "/myfavourites":
+                    myFavourites(request, response);
+                    break;
+                case "/deletefavourite":
+                    deleteFavourite(request, response);
+                    break;
+                case "/createfavourite":
+                    createFavourite(request, response);
+                    break;
                 default:
 
                     break;
@@ -77,6 +87,90 @@ public class UserController extends HttpServlet {
         } catch (IOException | ServletException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void myFavourites(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        HttpSession session = request.getSession();
+        User getUser = (User) session.getAttribute("userLogin");
+
+        if (getUser != null) {
+            FavouriteDAO favouriteDB = new FavouriteDAO();
+            try {
+                List<User> favourites = favouriteDB.getFavouriteUsers(getUser);
+                request.setAttribute("favourites", favourites);
+            } catch (Exception e) {
+                session.setAttribute("messageDB", e.getMessage());
+            } finally {
+                RequestDispatcher miDispatcher = request.getRequestDispatcher("/views/user/myFavourites.jsp");
+                miDispatcher.forward(request, response);
+            }
+        } else {
+            response.sendRedirect("/view/login");
+        }
+
+    }
+
+    private void createFavourite(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        HttpSession session = request.getSession();
+        User getUser = (User) session.getAttribute("userLogin");
+
+        int idFavouriteUser = Integer.parseInt(request.getParameter("idFavourite"));
+        if (getUser != null) {
+            FavouriteDAO favouriteDB = new FavouriteDAO();
+            UserDAO userDB = new UserDAO();
+            try {
+                boolean existFavouriteUser = userDB.existUser(idFavouriteUser);
+                if (existFavouriteUser) {
+                    boolean isAdded = favouriteDB.isAFavouriteUser(getUser, idFavouriteUser);
+                    if (!isAdded) {
+                        favouriteDB.addFavouriteUser(getUser, idFavouriteUser);
+                        String message = "Se agrego favorito con id " + idFavouriteUser + " exitosamente";
+                        session.setAttribute("messageFavourite", new TypeMessage("success", message));
+                        response.sendRedirect("/user/myfavourites");
+                    } else {
+                        String message = "Ya tiene al usuario con id " + idFavouriteUser + " agregado como favorito";
+                        session.setAttribute("messageFavourite", new TypeMessage("error", message));
+                        response.sendRedirect("/view/user/form-favourites");
+                    }
+                } else {
+                    String message = "No existe usuario con id " + idFavouriteUser;
+                    session.setAttribute("messageFavourite", new TypeMessage("error", message));
+                    response.sendRedirect("/view/user/form-favourites");
+                }
+            } catch (Exception e) {
+                session.setAttribute("messageDB", e.getMessage());
+            }
+        } else {
+            response.sendRedirect("/view/login");
+        }
+
+    }
+
+    private void deleteFavourite(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        HttpSession session = request.getSession();
+        User getUser = (User) session.getAttribute("userLogin");
+        int idFavouriteUser = Integer.parseInt(request.getParameter("idFavourite"));
+
+        if (getUser != null) {
+            FavouriteDAO favouriteDB = new FavouriteDAO();
+            try {
+                boolean wasAnyUserDeleted = favouriteDB.deleteFavouriteUser(getUser, idFavouriteUser);
+                if (wasAnyUserDeleted) {
+                    String message = "Se elimino favorito con id " + idFavouriteUser + " exitosamente";
+                    session.setAttribute("messageFavourite", new TypeMessage("success", message));
+                    response.sendRedirect("/user/myfavourites");
+                } else {
+                    String message = "No tiene un favorito con id " + idFavouriteUser + " agregado";
+                    session.setAttribute("messageFavourite", new TypeMessage("error", message));
+                    response.sendRedirect("/user/myfavourites");
+                }
+            } catch (Exception e) {
+                session.setAttribute("messageDB", e.getMessage());
+            } 
+        } else {
+            response.sendRedirect("/view/login");
+        }
+
     }
 
     private void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -153,7 +247,9 @@ public class UserController extends HttpServlet {
                 int totalAccountsCA = accountDB.totalNumberOfAccountsCA(getUser);
                 int totalAccountsCC = accountDB.totalNumberOfAccountsCC(getUser);
                 int totalTransfers = transferDB.totalNumberTransfers(getUser);
-                OtherData od = new OtherData(totalAccounts, totalAccountsCA, totalAccountsCC, totalTransfers);
+                double totalMoneyAccounts = accountDB.totalMoneyAccounts(getUser);
+                
+                OtherData od = new OtherData(totalAccounts, totalAccountsCA, totalAccountsCC, totalTransfers,totalMoneyAccounts);
                 request.setAttribute("otherData", od.mapOtherData());
                 request.setAttribute("userData", getUser.mapUserData());
 
